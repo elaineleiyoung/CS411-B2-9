@@ -11,6 +11,8 @@ Spotify playlist generator based on current location and weather
 - [Snapshots](#snapshots)
 - [About us](#about-us)
 
+## Find our project: `cd spotify-playlist-generator`
+
 ## Installation: npm and Firebase 
  
  Install dependencies:
