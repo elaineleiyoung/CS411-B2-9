@@ -9,15 +9,23 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   const handleLogin = () => {
+    console.log('handleLogin called');
+    localStorage.setItem('loginClicked', 'true'); // Store a value indicating that the login button was clicked
     accessToken.then((token) => {
+      console.log('accessToken resolved:', token);
       setIsLoggedIn(token);
       login();
     });
   };
 
-  // useEffect(() => {
-  //   const accessToken = localStorage.getItem('accessToken');
-  // }, []);
+  useEffect(() => {
+    const loginClicked = localStorage.getItem('loginClicked'); // Retrieve the stored value
+    if (loginClicked === 'true') {
+      console.log('The login button was clicked before the URL was redirected');
+      setIsLoggedIn(true); // Update the value of isLoggedIn
+      localStorage.removeItem('loginClicked'); // Clear the stored value
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
