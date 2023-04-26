@@ -27,26 +27,21 @@ const generateRandomString = length => {
   const stateKey = 'spotify_auth_state';
 
   router.get('/login', function(req, res) {
+
     const state = generateRandomString(16);
-    res.cookie(stateKey, state);
-  
-    const scope = 'user-read-private user-read-email';
-  
-    const queryParams = querystring.stringify({
-      client_id: CLIENT_ID,
-      response_type: 'code',
-      redirect_uri: REDIRECT_URI,
-      state: state,
-      scope: scope,
-    });
-  
-    if (!req.cookies[stateKey]) {
-      // User is not logged in, redirect to Spotify authorization page
-      res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
-    } else {
-      // User is logged in, render login page
-      res.render('login');
-    }
+  res.cookie(stateKey, state);
+
+  const scope = 'user-read-private user-read-email';
+
+  const queryParams = querystring.stringify({
+    client_id: CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: REDIRECT_URI,
+    state: state,
+    scope: scope,
+  });
+
+  res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
   });
   
 
