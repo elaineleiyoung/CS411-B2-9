@@ -175,7 +175,27 @@ class Reccomendations extends Component {
             <h2>Track recommendations</h2>
             <ul>
               {tracks.map((track) => (
-                <li key={track.id}>{track.name}</li>
+               <li
+               key={track.id}
+               style={{
+                 display: "flex",
+                 alignItems: "center",
+                 gap: "10px",
+                 margin: "10px 0",
+               }}
+             >
+               <img
+                 src={track.album.images[0].url}
+                 alt={`Album art for ${track.name}`}
+                 style={{ width: "50px", height: "50px" }}
+               />
+               <div>
+                 <h3 style={{ marginBottom: "5px" }}>{track.name}</h3>
+                 <p style={{ fontSize: "14px", color: "#888" }}>
+                   {track.artists.map((artist) => artist.name).join(", ")}
+                 </p>
+               </div>
+             </li>
               ))}
             </ul>
           </div>
