@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import axios from 'axios';
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
 class WeatherAPI extends Component {
   state = {
@@ -51,15 +54,15 @@ class WeatherAPI extends Component {
     const { location, coordinates, weather, loading, error, apiResponse } = this.state;
     return (
       <div>
-        <h1>Weather App</h1>
         <form onSubmit={this.handleSubmit}>
-          <input
+          <TextField id="standard-basic" label="Location" variant="standard"
+            fullWidth
             type="text"
             value={location}
             onChange={(event) => this.setState({ location: event.target.value })}
             placeholder="Enter location"
           />
-          <button type="submit">Search</button>
+          <Button variant="contained" type="submit">Search</Button>
         </form>
         <p className="App-intro"></p>
         {loading && <p>Loading...</p>}
