@@ -1,7 +1,21 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import {firebase} from './firebase.js';
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  where,
+  get,
+  doc,
+  orderBy,
+  limit,
+  query,
+} from 'firebase/firestore';
 
-// Map for localStorage keys
 const LOCALSTORAGE_KEYS = {
   accessToken: 'spotify_access_token',
   refreshToken: 'spotify_refresh_token',
@@ -16,103 +30,234 @@ const LOCALSTORAGE_VALUES = {
   expireTime: window.localStorage.getItem(LOCALSTORAGE_KEYS.expireTime),
   timestamp: window.localStorage.getItem(LOCALSTORAGE_KEYS.timestamp),
 };
+
 /**
  * Handles logic for retrieving the Spotify access token from localStorage
  * or URL query params
  * @returns {string} A Spotify access token
  */
- const getAccessToken = () => {
+const spotifyTokensCollection = collection(firebase, 'spotifyTokensCollection');
+
+
+const getAccessToken = async () => {
+  let queryRef = null; // Initialize query reference to null
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const queryParams = {
-    [LOCALSTORAGE_KEYS.accessToken]: urlParams.get('access_token'),
-    [LOCALSTORAGE_KEYS.refreshToken]: urlParams.get('refresh_token'),
-    [LOCALSTORAGE_KEYS.expireTime]: urlParams.get('expires_in'),
+    accessToken: urlParams.get('access_token'),
+    refreshToken: urlParams.get('refresh_token'),
+    expireTime: urlParams.get('expires_in'),
   };
   const hasError = urlParams.get('error');
 
-  // If there's an error OR the token in localStorage has expired, refresh the token
-  if (hasError || hasTokenExpired() || LOCALSTORAGE_VALUES.accessToken === 'undefined') {
-    refreshToken();
+  // If there's an error OR the token in Firebase has expired, refresh the token
+  if (hasError || await hasTokenExpired()) {
+    await refreshToken();
   }
 
-  // If there is a valid access token in localStorage, use that
-  if (LOCALSTORAGE_VALUES.accessToken && LOCALSTORAGE_VALUES.accessToken !== 'undefined') {
-    return LOCALSTORAGE_VALUES.accessToken;
+  // Check if token is present in local storage
+  const userToken = window.localStorage.getItem(LOCALSTORAGE_KEYS.accessToken);
+  if (userToken) {
+    return userToken;
+  }
+
+  // Check if token is present in Firebase
+  queryRef = query(spotifyTokensCollection, orderBy("expireTime", "desc"), limit(1));
+  const snapshot = await getDocs(queryRef);
+  if (!snapshot.empty) {
+    const tokenData = snapshot.docs[0].data();
+    const docId = snapshot.docs[0].id;
+
+    // If token is present in Firebase, update it and store it in local storage for future use
+    const newExpireTime = Date.now() + Number(queryParams.expireTime);
+    const newTokenData = {
+      expireTime: newExpireTime,
+      refreshToken: queryParams.refreshToken,
+      accessToken: queryParams.accessToken
+    };
+    await updateDoc(doc(spotifyTokensCollection, docId), newTokenData);
+
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, queryParams.accessToken);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.refreshToken, queryParams.refreshToken);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.expireTime, newExpireTime - Date.now());
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now().toString());
+
+    return queryParams.accessToken;
   }
 
   // If there is a token in the URL query params, user is logging in for the first time
-  if (queryParams[LOCALSTORAGE_KEYS.accessToken]) {
+  if (queryParams.accessToken) {
     // Store the query params in localStorage
-    for (const property in queryParams) {
-      window.localStorage.setItem(property, queryParams[property]);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, queryParams.accessToken);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.refreshToken, queryParams.refreshToken);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.expireTime, queryParams.expireTime);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now().toString());
+
+    // Store the query params in Firebase
+    try {
+      await addDoc(spotifyTokensCollection, {
+        expireTime: Date.now() + Number(queryParams.expireTime),
+        refreshToken: queryParams.refreshToken,
+        accessToken: queryParams.accessToken
+      });
+    } catch (error) {
+      console.error("Error adding document: ", error);
     }
-    // Set timestamp
-    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now());
+
     // Return access token from query params
-    return queryParams[LOCALSTORAGE_KEYS.accessToken];
+    return queryParams.accessToken;
   }
 
   // We should never get here!
-  return false;
+  return null;
 };
+
+
+
+
+
 
 /**
  * Checks if the amount of time that has elapsed between the timestamp in localStorage
  * and now is greater than the expiration time of 3600 seconds (1 hour).
  * @returns {boolean} Whether or not the access token in localStorage has expired
  */
- const hasTokenExpired = () => {
-  const { accessToken, timestamp, expireTime } = LOCALSTORAGE_VALUES;
-  if (!accessToken || !timestamp) {
+ const hasTokenExpired = async () => {
+  const q = query(collection(firebase, "spotifyTokensCollection"), orderBy("expireTime", "desc"), limit(1));
+  const snapshot = await getDocs(q);
+  console.log(snapshot)
+  if (snapshot.empty) {
     return false;
   }
-  const millisecondsElapsed = Date.now() - Number(timestamp);
-  return (millisecondsElapsed / 1000) > Number(expireTime);
+  const tokenData = snapshot.docs[0].data();
+  if (!tokenData.userToken || !tokenData.timestamp) {
+    return false;
+  }
+  const millisecondsElapsed = Date.now() - Number(tokenData.timestamp);
+  return (millisecondsElapsed / 1000) > Number(tokenData.expireTime);
 };
- /**
- * Use the refresh token in localStorage to hit the /refresh_token endpoint
- * in our Node app, then update values in localStorage with data from response.
- * @returns {void}
- */
 const refreshToken = async () => {
   try {
-    // Logout if there's no refresh token stored or we've managed to get into a reload infinite loop
-    if (!LOCALSTORAGE_VALUES.refreshToken ||
-      LOCALSTORAGE_VALUES.refreshToken === 'undefined' ||
-      (Date.now() - Number(LOCALSTORAGE_VALUES.timestamp) / 1000) < 1000
-    ) {
+    const q = query(collection(firebase, "spotifyTokensCollection"), orderBy("expireTime", "desc"), limit(1));
+    const snapshot = await getDocs(q);
+    console.log(snapshot)
+    if (snapshot.empty) {
       console.error('No refresh token available');
       logout();
+      return;
+    }
+    const tokenData = snapshot.docs[0].data();
+    const tokenId = snapshot.docs[0].id;
+    const refreshTokenValue = tokenData.refreshToken;
+    console.log(refreshTokenValue)
+
+    const now = Date.now();
+    const threshold = 60 * 1000; // 1 minute
+
+    if (tokenData.expireTime - now > threshold) {
+      console.log('Token is still valid');
+      return;
     }
 
-    // Use `/refresh_token` endpoint from our Node app
-    const { data } = await axios.get(`/refresh_token?refresh_token=${LOCALSTORAGE_VALUES.refreshToken}`);
+    if (!refreshTokenValue || refreshTokenValue === 'undefined') {
+      console.error('No refresh token available');
+      logout();
+      return;
+    }
 
-    // Update localStorage values
-    window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, data.access_token);
-    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now());
+    const { data } = await axios.get(`http://localhost:9000/spotify/refresh_token?refresh_token=${refreshTokenValue}`);
 
-    // Reload the page for localStorage updates to be reflected
-    window.location.reload();
+    if (!data.access_token || !data.expires_in) {
+      console.error('Error refreshing token');
+      logout();
+      return;
+    }
 
+    const newTokenData = {
+      expireTime: now + (data.expires_in * 1000),
+      refreshToken: data.refresh_token || refreshTokenValue,
+      userToken: data.access_token,
+    };
+
+    // Update the token data in Firebase
+    await updateDoc(doc(collection(firebase, "spotifyTokensCollection"), tokenId), newTokenData);
+
+    // Store the new token data in local storage
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, newTokenData.userToken);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.refreshToken, newTokenData.refreshToken);
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.expireTime, newTokenData.expireTime.toString());
+    window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now().toString());
+
+    console.log('Token refreshed');
   } catch (e) {
     console.error(e);
+    logout();
   }
 };
+
 
 /**
  * Clear out all localStorage items we've set and reload the page
  * @returns {void}
  */
- export const logout = () => {
+
+export const logout = async () => {
+  try {
+    // Remove token from Firebase collection
+    const query = collection(firebase, "spotifyTokensCollection");
+    const snapshot = await getDocs(query);
+    snapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+  } catch (e) {
+    console.error("Error deleting token from Firebase collection: ", e);
+  }
+
   // Clear all localStorage items
   for (const property in LOCALSTORAGE_KEYS) {
     window.localStorage.removeItem(LOCALSTORAGE_KEYS[property]);
   }
+
   // Navigate to homepage
-  window.location = window.location.origin;
+  // window.location = window.location.origin;
+  
 };
 
+export const login = async () => {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const accessToken = urlParams.get('access_token');
+  const refreshToken = urlParams.get('refresh_token');
+  const expireTime = urlParams.get('expires_in');
+
+  if (!accessToken) {
+    // User is not logged in
+    window.location.href = 'http://localhost:9000/spotify/login';
+  } else {
+    // User is logged in
+    const spotifyTokensCollection = collection(firebase, 'spotifyTokensCollection');
+    const tokenData = {
+      accessToken,
+      refreshToken,
+      expireTime: Date.now() + Number(expireTime),
+    };
+    try {
+      const docRef = await addDoc(spotifyTokensCollection, tokenData);
+      console.log('Access token added to the database with ID: ', docRef.id);
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, accessToken);
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.refreshToken, refreshToken);
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.expireTime, expireTime);
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now().toString());
+    } catch (error) {
+      console.error('Error adding access token to the database: ', error);
+    }
+  }
+};
+
+
+
 export const accessToken = getAccessToken();
+
+
+
 

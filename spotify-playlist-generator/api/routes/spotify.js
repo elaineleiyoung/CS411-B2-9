@@ -5,6 +5,8 @@ console.log(process.env.CLIENT_ID);
 const express = require('express');
 const axios = require('axios');
 const querystring = require('querystring');
+
+
 // var CLIENT_ID =  process.env.REACT_APP_CLIENT_ID;
 var CLIENT_ID = "e687e857785e45aaa016ecbbb7f49ba0";
 var CLIENT_SECRET = "8c555068a8b84c4ab992ea6cc4e4be55";
@@ -24,23 +26,29 @@ const generateRandomString = length => {
   
   const stateKey = 'spotify_auth_state';
 
-router.get('/login', function(req, res) {
-
+  router.get('/login', function(req, res) {
     const state = generateRandomString(16);
-  res.cookie(stateKey, state);
-
-  const scope = 'user-read-private user-read-email';
-
-  const queryParams = querystring.stringify({
-    client_id: CLIENT_ID,
-    response_type: 'code',
-    redirect_uri: REDIRECT_URI,
-    state: state,
-    scope: scope,
+    res.cookie(stateKey, state);
+  
+    const scope = 'user-read-private user-read-email';
+  
+    const queryParams = querystring.stringify({
+      client_id: CLIENT_ID,
+      response_type: 'code',
+      redirect_uri: REDIRECT_URI,
+      state: state,
+      scope: scope,
+    });
+  
+    if (!req.cookies[stateKey]) {
+      // User is not logged in, redirect to Spotify authorization page
+      res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
+    } else {
+      // User is logged in, render login page
+      res.render('login');
+    }
   });
-
-  res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
-  });
+  
 
 router.get('/callback', (req, res) => {
     const code = req.query.code || null;
