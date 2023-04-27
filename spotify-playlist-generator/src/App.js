@@ -3,7 +3,7 @@ import { accessToken, login, logout } from './spotify';
 import Button from '@mui/material/Button';
 // import WeatherAPI from './todelete/WeatherAPI.js';
 import Profile from './Profile.js'
-import Reccomendations from './Reccomendations';
+import Recommendations from './Recommendations';
 import './App.css';
 
 function App() {
@@ -44,7 +44,7 @@ function App() {
             <Profile accessToken={accessToken} />
           </>
         )}
-        <Reccomendations accessToken={accessToken}/>
+        <Recommendations />
       </header>
     </div>
   );
