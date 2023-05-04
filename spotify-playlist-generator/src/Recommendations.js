@@ -33,24 +33,22 @@ function Recommendations() {
   // Function to map weather to Spotify genre
   const mapWeatherToSpotifyGenre = (temp, description) => {
     let genre;
-
-    // Map weather description to Spotify genre using switch statement
+  
     switch (description.toLowerCase()) {
       case "clear sky":
         genre = "pop";
         break;
       case "few clouds":
-        genre = "indie pop";
+        genre = "indie_pop";
         break;
       case "scattered clouds":
         genre = "indie";
         break;
       case "broken clouds":
-        genre = "alternative rock";
+        genre = "alt-rock";
         break;
       case "shower rain":
-        // genre = "chill";
-        genre="rainy-day"
+        genre = "rainy-day";
         break;
       case "rain":
         genre = "jazz";
@@ -68,22 +66,12 @@ function Recommendations() {
         genre = "pop";
         break;
     }
-
-    // Map temperature range to Spotify genre
-    // if (temp <= 10) {
-    //   genre = "classical";
-    // } else if (temp <= 20) {
-    //   genre = "indie";
-    // } else if (temp <= 30) {
-    //   genre = "pop";
-    // } else {
-    //   genre = "reggae";
-    // }
-
+  
     return genre;
-  }
+  };
+  
 
-  const callAPI = async (location) => {
+  const callWeatherAPI = async (location) => {
     const response = await axios.get(
       `http://localhost:9000/weatherAPI?location=${location}`
     );
@@ -91,6 +79,31 @@ function Recommendations() {
     return response.data;
   };
 
+  const callRecommendationsAPI = async (genre, accessToken) => {
+    console.log(accessToken)
+    try {
+      console.log("Calling recommendations API with genre:", genre);
+
+      const encodedGenre = encodeURIComponent(genre);
+      const requestUrl = `http://localhost:9000/spotify/recommendations?genre=${encodedGenre}&limit=10`;
+      const requestHeaders = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+  
+      const response = await axios.get(requestUrl, {
+        headers: requestHeaders,
+      });
+      // console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error from backend:', error.response.data);
+    }
+  };
+  
+  
+  
+  
+  
 
   const handleSubmit = async (event) => {
   event.preventDefault();
@@ -105,100 +118,103 @@ function Recommendations() {
     setLoading(true);
     setError(null);
 
-    const data = await callAPI(location);
+    const weatherData = await callWeatherAPI(location);
 
 
     // Map weather to Spotify genre
     const genre = mapWeatherToSpotifyGenre(
-      data.weather.main.temp,
-      data.weather.weather[0].description
+      weatherData.weather.main.temp,
+      weatherData.weather.weather[0].description
     );
 
     // Get track recommendations from Spotify
-    const token = accessToken
-    console.log(token)
-    const url = `https://api.spotify.com/v1/recommendations?seed_genres=${genre}&limit=10`;
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-    const tracksResponse = await axios.get(url, config);
-    const tracks = tracksResponse.data.tracks;
-    setLocation(data.location);
-    setCoordinates(data.coordinates);
-    setWeather({
-      temp: data.weather.main.temp,
-      description: data.weather.weather[0].description,
-    });
-    setLoading(false);
-    setError(null);
-    setGenre(genre);
-    setTracks(tracks);
-  } catch (error) {
-    setError(error.message);
-    setLocation("");
-    setCoordinates(null);
-    setWeather({ temp: null, description: null });
-    setLoading(false);
-    setGenre(null);
-    setTracks(null);
-  }
-};
+    const recommendationsData = await callRecommendationsAPI(genre, accessToken);
 
-    return (
-      <div>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            variant="standard"
-            label="Enter location"
-            value={location}
-            onChange={(event) =>
-              setLocation(event.target.value)
-            }
-          />
-          <Button variant="contained" type="submit">Get weather and music recommendations</Button>
-        </form>
+    setLocation(weatherData.location);
+      setCoordinates(weatherData.coordinates);
+      setWeather({
+        temp: weatherData.weather.main.temp,
+        description: weatherData.weather.weather[0].description,
+      });
+      setLoading(false);
+      setError(null);
+      setGenre(genre);
+      setTracks(recommendationsData.tracks);
+    } catch (error) {
+      setError(error.message);
+      setLocation("");
+      setCoordinates(null);
+      setWeather({ temp: null, description: null });
+      setLoading(false);
+      setGenre(null);
+      setTracks(null);
+    }
+  };
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          variant="standard"
+          label="Enter location"
+          value={location}
+          onChange={(event) => setLocation(event.target.value)}
+        />
+        <Button variant="contained" type="submit">
+          Get weather and music recommendations
+        </Button>
+      </form>
   
-        {loading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-        {!loading && !error && genre && (
-          <div>
-            <h2>Genre for {location}</h2>
-            <p>{genre}</p>
-            <h2>Weather for {location}</h2>
-            <p>{weather.temp} °C, {weather.description}</p>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+      {!loading && !error && genre && (
+        <div>
+          <h2>Genre for {location}</h2>
+          <p>{genre}</p>
+          <h2>Weather for {location}</h2>
+          <p>
+            {weather.temp} °C, {weather.description}
+          </p>
   
-            <h2>Playlist Reccomendation</h2>
-            <ul>
-              {tracks.map((track) => (
-               <li
-               key={track.id}
-               style={{
-                 display: "flex",
-                 alignItems: "center",
-                 gap: "10px",
-                 margin: "10px 0",
-               }}
-             >
-               <img
-                 src={track.album.images[0].url}
-                 alt={`Album art for ${track.name}`}
-                 style={{ width: "50px", height: "50px" }}
-               />
-               <div>
-                 <h3 style={{ marginBottom: "5px" }}>{track.name}</h3>
-                 <p style={{ fontSize: "14px", color: "#888" }}>
-                   {track.artists.map((artist) => artist.name).join(", ")}
-                 </p>
-               </div>
-             </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          {tracks && tracks.length > 0 ? (
+            <div>
+              <h2>Playlist Recommendation</h2>
+              <ul>
+                {tracks.map((track) => (
+                  <li
+                    key={track.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      margin: "10px 0",
+                    }}
+                  >
+                    <img
+                      src={track.album.images[0].url}
+                      alt={`Album art for ${track.name}`}
+                      style={{ width: "50px", height: "50px" }}
+                    />
+                    <div>
+                      <h3 style={{ marginBottom: "5px" }}>{track.name}</h3>
+                      <p style={{ fontSize: "14px", color: "#888" }}>
+                        {track.artists.map((artist) => artist.name).join(", ")}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No tracks found.</p>
+          )}
+        </div>
+      )}
   
-        {!loading && !error && !genre && (
-          <p>Enter a location to get weather and music recommendations</p>
-        )}
-      </div>
-    );
-  }
+      {!loading && !error && !genre && (
+        <p>Enter a location to get weather and music recommendations</p>
+      )}
+    </div>
+  );
+      }
 // }
 export default Recommendations

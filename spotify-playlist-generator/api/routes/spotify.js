@@ -107,3 +107,29 @@ router.get('/callback', (req, res) => {
   
 
 module.exports = router;
+
+router.get('/recommendations', (req, res) => {
+  console.log("Received request");
+  const access_token = req.headers.authorization.split(' ')[1];
+  const genre = req.query.genre;
+  const limit = req.query.limit;
+
+  axios({
+    method: 'get',
+    url: `https://api.spotify.com/v1/recommendations?seed_genres=${genre}&limit=${limit}`,
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  })
+    .then(response => {
+      console.log("Spotify API response:", response.data);
+      res.json(response.data);
+    })
+    .catch(error => {
+      console.log('Error from Spotify API:', error.response.data);
+      res.status(error.response.status).json(error.response.data);
+    });
+
+
+
+});
