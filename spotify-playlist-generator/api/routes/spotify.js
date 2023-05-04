@@ -61,22 +61,22 @@ router.get('/callback', (req, res) => {
       Authorization: `Basic ${new Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
     },
   })
-    .then(response => {
-        if (response.status === 200) {
-            const { access_token, refresh_token, expires_in } = response.data;
-    
-            const queryParams = querystring.stringify({
-              access_token,
-              refresh_token,
-              expires_in,
-            });
-    
-            res.redirect(`http://localhost:3000/?${queryParams}`);
-    
-          } else {
-            res.redirect(`/?${querystring.stringify({ error: 'invalid_token' })}`);
-          }
-    })
+  .then(response => {
+    if (response.status === 200) {
+      const { access_token, refresh_token, expires_in } = response.data;
+  
+      const queryParams = querystring.stringify({
+        access_token,
+        refresh_token,
+        expires_in,
+      });
+  
+      res.redirect(`http://localhost:3000/?${queryParams}`);
+  
+    } else {
+      res.redirect(`/?${querystring.stringify({ error: 'invalid_token' })}`);
+    }
+  })
     .catch(error => {
       res.send(error);
     });
@@ -108,28 +108,31 @@ router.get('/callback', (req, res) => {
 
 module.exports = router;
 
-router.get('/recommendations', (req, res) => {
+router.get("/recommendations", (req, res) => {
   console.log("Received request");
-  const access_token = req.headers.authorization.split(' ')[1];
+  const access_token = req.headers.authorization.split(" ")[1];
   const genre = req.query.genre;
+  const acousticness = req.query.acousticness;
   const limit = req.query.limit;
 
   axios({
-    method: 'get',
-    url: `https://api.spotify.com/v1/recommendations?seed_genres=${genre}&limit=${limit}`,
+    method: "get",
+    url: `https://api.spotify.com/v1/recommendations?seed_genres=${genre}&target_acousticness=${acousticness}&limit=${limit}`,
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
   })
-    .then(response => {
+    .then((response) => {
       console.log("Spotify API response:", response.data);
       res.json(response.data);
     })
-    .catch(error => {
-      console.log('Error from Spotify API:', error.response.data);
+    .catch((error) => {
+      console.log("Error from Spotify API:", error.response.data);
       res.status(error.response.status).json(error.response.data);
     });
-
-
-
 });
+
+
+
+
+

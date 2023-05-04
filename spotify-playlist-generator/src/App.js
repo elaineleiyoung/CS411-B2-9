@@ -5,34 +5,91 @@ import Button from '@mui/material/Button';
 import Profile from './Profile.js'
 import Recommendations from './Recommendations';
 import './App.css';
+import axios from "axios";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log('handleLogin called');
-    localStorage.setItem('loginClicked', 'true'); // Store a value indicating that the login button was clicked
-    accessToken.then((token) => {
+    localStorage.setItem('loginClicked', 'true');
+    try {
+      const token = await accessToken;
       console.log('accessToken resolved:', token);
       setIsLoggedIn(token);
-      login();
-    });
+      await login();
+      refreshAccessToken();
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
+  };
+  
+
+  
+
+  const refreshAccessToken = () => {
+    const storedRefreshToken = localStorage.getItem('refreshToken');
+    if (storedRefreshToken) {
+      axios.get(`http://localhost:9000/spotify/refresh_token?refresh_token=${storedRefreshToken}`)
+        .then((response) => {
+          localStorage.setItem('accessToken', response.data.access_token);
+          localStorage.setItem('expiresIn', response.data.expires_in);
+          setIsLoggedIn(response.data.access_token);
+        })
+        .catch((error) => {
+          console.log('Error refreshing token:', error);
+        });
+    }
   };
 
   useEffect(() => {
-    const loginClicked = localStorage.getItem('loginClicked'); // Retrieve the stored value
-    if (loginClicked === 'true') {
-      console.log('The login button was clicked before the URL was redirected');
-      setIsLoggedIn(true); // Update the value of isLoggedIn
-      localStorage.removeItem('loginClicked'); // Clear the stored value
-    }
+    (async () => {
+      const url = window.location.href;
+      const queryParams = new URLSearchParams(url.split('?')[1]);
+  
+      const accessToken = queryParams.get('access_token');
+      const refreshToken = queryParams.get('refresh_token');
+      const expiresIn = queryParams.get('expires_in');
+  
+      if (accessToken && refreshToken && expiresIn) {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('expiresIn', expiresIn);
+        setIsLoggedIn(accessToken);
+      }
+  
+      const loginClicked = localStorage.getItem('loginClicked');
+      if (loginClicked === 'true') {
+        const accessToken = localStorage.getItem('accessToken');
+        const expiresIn = localStorage.getItem('expiresIn');
+        const currentTime = Math.floor(new Date().getTime() / 1000);
+  
+        if (accessToken && expiresIn && currentTime >= expiresIn) {
+          await refreshAccessToken();
+        } else {
+          setIsLoggedIn(accessToken);
+        }
+  
+        console.log('The login button was clicked before the URL was redirected');
+        localStorage.removeItem('loginClicked');
+      }
+    })();
   }, []);
+  
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     setIsLoggedIn(null);
     logout();
+  
+    // Remove access_token, refresh_token, and expires_in from the URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('access_token');
+    url.searchParams.delete('refresh_token');
+    url.searchParams.delete('expires_in');
+    window.history.pushState({}, '', url);
   };
+  
 
   return (
     <div className="App">
@@ -49,7 +106,8 @@ function App() {
             <Button variant="contained" onClick={handleLogout}>
               Log Out
             </Button>
-            <Profile accessToken={accessToken} />
+            {/* Pass isLoggedIn state to the Profile component */}
+            <Profile accessToken={isLoggedIn} />
           </>
         )}
       </header>

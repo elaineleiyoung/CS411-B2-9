@@ -31,17 +31,18 @@ function Recommendations() {
 
 
   // Function to map weather to Spotify genre
-  const mapWeatherToSpotifyGenre = (temp, description) => {
+  const mapWeatherToSpotifyAttributes = (temp, description) => {
     let genre;
+    let acousticness;
   
     switch (description.toLowerCase()) {
       case "clear sky":
         genre = "pop";
         break;
       case "few clouds":
-        genre = "indie_pop";
+        genre = "indie-pop";
         break;
-      case "scattered clouds":
+      case "overcast clouds":
         genre = "indie";
         break;
       case "broken clouds":
@@ -66,8 +67,18 @@ function Recommendations() {
         genre = "pop";
         break;
     }
-  
-    return genre;
+
+
+    if (temp < 10) {
+      acousticness = (Math.random() * (1.0 - 0.7) + 0.7).toFixed(2);
+    } else if (temp >= 10 && temp <= 25) {
+      acousticness = (Math.random() * (0.7 - 0.3) + 0.3).toFixed(2);
+    } else {
+      acousticness = (Math.random() * (0.3 - 0.0) + 0.0).toFixed(2);
+    }
+    
+
+    return { genre, acousticness };
   };
   
 
@@ -79,13 +90,14 @@ function Recommendations() {
     return response.data;
   };
 
-  const callRecommendationsAPI = async (genre, accessToken) => {
+  const callRecommendationsAPI = async (genre, acousticness, accessToken) => {
     console.log(accessToken)
     try {
       console.log("Calling recommendations API with genre:", genre);
 
       const encodedGenre = encodeURIComponent(genre);
-      const requestUrl = `http://localhost:9000/spotify/recommendations?genre=${encodedGenre}&limit=10`;
+      const encodedAcousticness = encodeURIComponent(acousticness);
+      const requestUrl = `http://localhost:9000/spotify/recommendations?genre=${encodedGenre}&acousticness=${encodedAcousticness}&limit=10`;
       const requestHeaders = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -122,13 +134,13 @@ function Recommendations() {
 
 
     // Map weather to Spotify genre
-    const genre = mapWeatherToSpotifyGenre(
+    const { genre, acousticness } = mapWeatherToSpotifyAttributes(
       weatherData.weather.main.temp,
       weatherData.weather.weather[0].description
     );
 
     // Get track recommendations from Spotify
-    const recommendationsData = await callRecommendationsAPI(genre, accessToken);
+    const recommendationsData = await callRecommendationsAPI(genre, acousticness, accessToken);
 
     setLocation(weatherData.location);
       setCoordinates(weatherData.coordinates);

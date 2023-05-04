@@ -136,6 +136,7 @@ const getAccessToken = async () => {
   const millisecondsElapsed = Date.now() - Number(tokenData.timestamp);
   return (millisecondsElapsed / 1000) > Number(tokenData.expireTime);
 };
+
 const refreshToken = async () => {
   try {
     const q = query(collection(firebase, "spotifyTokensCollection"), orderBy("expireTime", "desc"), limit(1));
@@ -195,6 +196,15 @@ const refreshToken = async () => {
   }
 };
 
+const refreshUserToken = async (refreshToken) => {
+  try {
+    const response = await axios.get(`http://localhost:9000/spotify/refresh_token?refresh_token=${refreshToken}`);
+    return response.data.access_token;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    return null;
+  }
+};
 
 /**
  * Clear out all localStorage items we've set and reload the page
@@ -222,7 +232,6 @@ export const logout = async () => {
   // window.location = window.location.origin;
   
 };
-
 export const login = async () => {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -234,25 +243,32 @@ export const login = async () => {
     // User is not logged in
     window.location.href = 'http://localhost:9000/spotify/login';
   } else {
+    // Refresh the access token
+    const refreshedAccessToken = await refreshUserToken(refreshToken); // Call refreshUserToken instead of refreshToken
+
     // User is logged in
     const spotifyTokensCollection = collection(firebase, 'spotifyTokensCollection');
     const tokenData = {
-      accessToken,
+      accessToken: refreshedAccessToken,
       refreshToken,
       expireTime: Date.now() + Number(expireTime),
     };
+
     try {
       const docRef = await addDoc(spotifyTokensCollection, tokenData);
       console.log('Access token added to the database with ID: ', docRef.id);
-      window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, accessToken);
+      window.localStorage.setItem(LOCALSTORAGE_KEYS.accessToken, refreshedAccessToken);
       window.localStorage.setItem(LOCALSTORAGE_KEYS.refreshToken, refreshToken);
       window.localStorage.setItem(LOCALSTORAGE_KEYS.expireTime, expireTime);
       window.localStorage.setItem(LOCALSTORAGE_KEYS.timestamp, Date.now().toString());
     } catch (error) {
       console.error('Error adding access token to the database: ', error);
     }
+
+    return Promise.resolve();
   }
 };
+
 
 
 
