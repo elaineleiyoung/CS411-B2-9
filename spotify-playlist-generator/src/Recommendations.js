@@ -112,10 +112,6 @@ function Recommendations() {
     }
   };
   
-  
-  
-  
-  
 
   const handleSubmit = async (event) => {
   event.preventDefault();

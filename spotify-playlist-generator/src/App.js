@@ -50,11 +50,12 @@ function App() {
         localStorage.setItem('spotify_refresh_token', refreshToken);
         localStorage.setItem('spotify_token_expire_time', expiresIn);
         setIsLoggedIn(accessToken);
-      } else {
+      } else if (!isLoggedIn) { // add a condition to check if isLoggedIn is already set
         refreshAccessToken();
       }
     })();
-  }, []);
+  }, [isLoggedIn]); // add isLoggedIn to the dependency array
+  
 
   const handleLogout = () => {
     localStorage.removeItem('spotify_access_token');

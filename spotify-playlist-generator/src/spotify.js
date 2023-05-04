@@ -76,7 +76,7 @@ export const getAccessToken = async () => {
   }
 
   // If no token found in local storage or URL query params, redirect to login
-  window.location.href = 'http://localhost:9000/spotify/login';
+  // window.location.href = 'http://localhost:9000/spotify/login';
   return null;
 };
 
@@ -201,6 +201,7 @@ export const login = async () => {
   if (!accessToken) {
     // User is not logged in
     const newAccessToken = await getAccessToken();
+    window.location.href = 'http://localhost:9000/spotify/login';
     return newAccessToken;
   } else {
     // Refresh the access token
@@ -235,8 +236,3 @@ export const login = async () => {
 
 
 export const accessToken = getAccessToken();
-
-
-
-
-
