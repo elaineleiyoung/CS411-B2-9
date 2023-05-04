@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { accessToken, login, logout } from './spotify';
 import Button from '@mui/material/Button';
-// import WeatherAPI from './todelete/WeatherAPI.js';
 import Profile from './Profile.js'
 import Recommendations from './Recommendations';
 import './App.css';
@@ -14,26 +13,21 @@ function App() {
     console.log('handleLogin called');
     localStorage.setItem('loginClicked', 'true');
     try {
-      const token = await accessToken;
+      const token = await login();
       console.log('accessToken resolved:', token);
       setIsLoggedIn(token);
-      await login();
-      refreshAccessToken();
     } catch (error) {
       console.error('Error during login:', error);
     }
   };
-  
-
-  
 
   const refreshAccessToken = () => {
-    const storedRefreshToken = localStorage.getItem('refreshToken');
+    const storedRefreshToken = localStorage.getItem('spotify_refresh_token');
     if (storedRefreshToken) {
       axios.get(`http://localhost:9000/spotify/refresh_token?refresh_token=${storedRefreshToken}`)
         .then((response) => {
-          localStorage.setItem('accessToken', response.data.access_token);
-          localStorage.setItem('expiresIn', response.data.expires_in);
+          localStorage.setItem('spotify_access_token', response.data.access_token);
+          localStorage.setItem('spotify_token_expire_time', response.data.expires_in);
           setIsLoggedIn(response.data.access_token);
         })
         .catch((error) => {
@@ -52,33 +46,20 @@ function App() {
       const expiresIn = queryParams.get('expires_in');
   
       if (accessToken && refreshToken && expiresIn) {
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem('expiresIn', expiresIn);
+        localStorage.setItem('spotify_access_token', accessToken);
+        localStorage.setItem('spotify_refresh_token', refreshToken);
+        localStorage.setItem('spotify_token_expire_time', expiresIn);
         setIsLoggedIn(accessToken);
-      }
-  
-      const loginClicked = localStorage.getItem('loginClicked');
-      if (loginClicked === 'true') {
-        const accessToken = localStorage.getItem('accessToken');
-        const expiresIn = localStorage.getItem('expiresIn');
-        const currentTime = Math.floor(new Date().getTime() / 1000);
-  
-        if (accessToken && expiresIn && currentTime >= expiresIn) {
-          await refreshAccessToken();
-        } else {
-          setIsLoggedIn(accessToken);
-        }
-  
-        console.log('The login button was clicked before the URL was redirected');
-        localStorage.removeItem('loginClicked');
+      } else {
+        refreshAccessToken();
       }
     })();
   }, []);
-  
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('spotify_access_token');
+    localStorage.removeItem('spotify_refresh_token');
+    localStorage.removeItem('spotify_token_expire_time');
     setIsLoggedIn(null);
     logout();
   
@@ -89,7 +70,6 @@ function App() {
     url.searchParams.delete('expires_in');
     window.history.pushState({}, '', url);
   };
-  
 
   return (
     <div className="App">

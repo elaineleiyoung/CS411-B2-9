@@ -5,6 +5,10 @@ console.log(process.env.CLIENT_ID);
 const express = require('express');
 const axios = require('axios');
 const querystring = require('querystring');
+// Import the CORS package
+const cors = require('cors');
+
+
 
 
 // var CLIENT_ID =  process.env.REACT_APP_CLIENT_ID;
@@ -26,7 +30,7 @@ const generateRandomString = length => {
   
   const stateKey = 'spotify_auth_state';
 
-  router.get('/login', function(req, res) {
+router.get('/login', function(req, res) {
 
     const state = generateRandomString(16);
   res.cookie(stateKey, state);
@@ -39,6 +43,7 @@ const generateRandomString = length => {
     redirect_uri: REDIRECT_URI,
     state: state,
     scope: scope,
+    show_dialog: true,
   });
 
   res.redirect(`https://accounts.spotify.com/authorize?${queryParams}`);
