@@ -52,7 +52,12 @@ router.get('/login', function(req, res) {
 
 router.get('/callback', (req, res) => {
     const code = req.query.code || null;
-
+    const error = req.query.error;
+    if (error){
+      console.log('callback error')
+      res.redirect('http://localhost:3000');
+    }
+  else{
   axios({
     method: 'post',
     url: 'https://accounts.spotify.com/api/token',
@@ -85,7 +90,7 @@ router.get('/callback', (req, res) => {
     .catch(error => {
       res.send(error);
     });
-});
+}});
 
   router.get('/refresh_token', (req, res) => {
     const { refresh_token } = req.query;
