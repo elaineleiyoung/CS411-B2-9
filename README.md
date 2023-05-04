@@ -2,7 +2,7 @@
 ## See API prototype: ON BRANCH PROTOTYPE
 
 ## Project Description:  
-Spotify playlist generator based on current location and weather
+Spotify playlist generator based on current location and weather that generates 10 songs for your weather mood.
 ## Table of contents
 
 - [Installation](#installation-npm-and-firebase)
