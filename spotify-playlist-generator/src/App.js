@@ -75,25 +75,26 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Spotify Playlist Generator</h1>
-        <Recommendations />
+        <h1 className="App-title">Spotify Playlist Generator</h1>
+        <Recommendations className="App-recommendations" />
         {!isLoggedIn ? (
-          <Button variant="contained" onClick={handleLogin}>
+          <Button className="App-login" variant="contained" onClick={handleLogin}>
             Log in to Spotify
           </Button>
         ) : (
           <>
-            <h1>Logged in!</h1>
-            <Button variant="contained" onClick={handleLogout}>
+            <h1 className="App-loggedIn">Logged in!</h1>
+            <Button className="App-logout" variant="contained" onClick={handleLogout}>
               Log Out
             </Button>
             {/* Pass isLoggedIn state to the Profile component */}
-            <Profile accessToken={isLoggedIn} />
+            <Profile className="App-profile" accessToken={isLoggedIn} />
           </>
         )}
       </header>
     </div>
   );
+  
 }
 
 export default App;
