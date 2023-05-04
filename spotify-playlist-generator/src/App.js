@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { accessToken, login, logout } from './spotify';
 import Button from '@mui/material/Button';
-// import WeatherAPI from './WeatherAPI.js';
-import Reccomendations from './Reccomendations';
+// import WeatherAPI from './todelete/WeatherAPI.js';
 import Profile from './Profile.js'
+import Recommendations from './Recommendations';
 import './App.css';
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Spotify Playlist Generator</h1>
-        <Reccomendations />
+        <Recommendations />
         {!isLoggedIn ? (
           <Button variant="contained" onClick={handleLogin}>
             Log in to Spotify
@@ -53,7 +53,6 @@ function App() {
           </>
         )}
       </header>
-      <Reccomendations accessToken={accessToken} />
     </div>
   );
 }
