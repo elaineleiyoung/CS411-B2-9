@@ -53,7 +53,9 @@ function App() {
           </>
         )}
       </header>
-      <Reccomendations accessToken={accessToken} />
+      <div id="list">
+        <Reccomendations accessToken={accessToken} />
+      </div>
     </div>
   );
 }
