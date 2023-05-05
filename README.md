@@ -72,8 +72,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 
 ## Snapshots:
-<img height="300" src="https://github.com/elaineleiyoung/StakeTheStigma/blob/master/assets/screenshot5.png"/>
-<img height="300" src="https://github.com/elaineleiyoung/StakeTheStigma/blob/master/assets/screenshot5.png"/>
+<img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot1.png"/>
+<img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot2.png"/>
 
 ## About us:
 This project is created by Team 9 in Lab B2 of CS411 at Boston University. Team members includes: [Elaine](https://github.com/elaineleiyoung), [Jackson](https://github.com/Swaggermuffin64), and [Jianing](https://github.com/trudali).
