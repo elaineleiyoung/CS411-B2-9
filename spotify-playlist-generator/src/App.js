@@ -76,6 +76,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1 className="App-title">Spotify Playlist Generator</h1>
+        <h2> Generate spotify song recommendations based on any location's weather </h2>
         <Recommendations className="App-recommendations" />
         {!isLoggedIn ? (
           <Button className="App-login" variant="contained" onClick={handleLogin}>

@@ -1,0 +1,52 @@
+.app-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .app-description {
+    margin-top: 0;
+  }
+  
+  .app-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+  }
+  
+  .app-form-textfield {
+    margin-bottom: 10px;
+  }
+  
+  .app-form-button {
+    background-color: #1db954;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  
+  .app-loading,
+  .app-error {
+    margin-top: 30px;
+  }
+  
+  .app-result-heading {
+    margin-top: 40px;
+    margin-bottom: 10px;
+  }
+  
+  .app-result-text {
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+  
+  .app-tracks-list {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .app-track {
+    border: 1px solid black;
+    padding: 10px;
+  }

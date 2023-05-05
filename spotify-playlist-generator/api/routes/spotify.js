@@ -144,5 +144,20 @@ router.get("/recommendations", (req, res) => {
 
 
 
+  router.get("/profile", async (req, res) => {
+    const accessToken = req.headers.authorization.split(" ")[1];
+
+    try {
+      const response = await axios.get("https://api.spotify.com/v1/me", {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
+      });
+      res.json(response.data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch profile data from Spotify API" });
+    }
+  });
 
 

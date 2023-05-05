@@ -187,7 +187,7 @@ export const logout = async () => {
   }
 
   // Navigate to homepage
-  // window.location = window.location.origin;
+  window.location = window.location.origin;
   
 };
 

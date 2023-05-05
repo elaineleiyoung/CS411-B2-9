@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {firebase} from "./firebase.js";
 import { collection, getDocs } from "firebase/firestore";
-
+import './Recommendations.css'
 // const db = firebase.firestore();
 
 function Recommendations() {
@@ -159,37 +159,40 @@ function Recommendations() {
     }
   };
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="app-container">
+      <p className="app-description">Our application takes the current weather of any location searched and uses the temperature to adjust the acousticness and the weather description to adjust the genre of your song recommendations.</p>
+      <form className="app-form" onSubmit={handleSubmit}>
         <TextField
+          className="app-form-textfield"
           variant="standard"
           label="Enter location"
           value={location}
           onChange={(event) => setLocation(event.target.value)}
         />
-        <Button variant="contained" type="submit">
+        <Button className="app-form-button" variant="contained" type="submit">
           Get weather and music recommendations
         </Button>
       </form>
-  
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+
+      {loading && <p className="app-loading">Loading...</p>}
+      {error && <p className="app-error">Error: {error}</p>}
       {!loading && !error && genre && (
         <div>
-          <h2>Genre for {location}</h2>
-          <p>{genre}</p>
-          <h2>Weather for {location}</h2>
-          <p>
+          <h2 className="app-result-heading">Genre for {location}</h2>
+          <p className="app-result-text">{genre}</p>
+          <h2 className="app-result-heading">Weather for {location}</h2>
+          <p className="app-result-text">
             {weather.temp} °C, {weather.description}
           </p>
-  
+
           {tracks && tracks.length > 0 ? (
             <div>
-              <h2>Playlist Recommendation</h2>
-              <ul>
+              <h2 className="app-result-heading">Song Recommendations for Your Playlist:</h2>
+              <ul className="app-tracks-list">
                 {tracks.map((track) => (
                   <li
                     key={track.id}
+                    className="app-track"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -198,13 +201,14 @@ function Recommendations() {
                     }}
                   >
                     <img
+                      className="app-track-image"
                       src={track.album.images[0].url}
                       alt={`Album art for ${track.name}`}
                       style={{ width: "50px", height: "50px" }}
                     />
-                    <div>
-                      <h3 style={{ marginBottom: "5px" }}>{track.name}</h3>
-                      <p style={{ fontSize: "14px", color: "#888" }}>
+                    <div className="app-track-details">
+                      <h3 className="app-track-name">{track.name}</h3>
+                      <p className="app-track-artists">
                         {track.artists.map((artist) => artist.name).join(", ")}
                       </p>
                     </div>
@@ -213,15 +217,16 @@ function Recommendations() {
               </ul>
             </div>
           ) : (
-            <p>No tracks found.</p>
+            <p className="app-no-tracks">No tracks found.</p>
           )}
         </div>
       )}
-  
+
       {!loading && !error && !genre && (
-        <p>Enter a location to get weather and music recommendations</p>
+        <p className="app-start-message">Enter a location to get weather and music recommendations</p>
       )}
     </div>
+
   );
       }
 // }
