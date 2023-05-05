@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import './style/Profile.css';
 
+// Profile component: Displays user's profile information
 function Profile({ accessToken }) {
   const [profileData, setProfileData] = useState(null);
 
+  // Fetch user's profile data using the accessToken
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -23,10 +25,12 @@ function Profile({ accessToken }) {
     fetchProfileData();
   }, [accessToken]);
 
+  // Display a loading message if profile data is not yet available
   if (!profileData) {
     return <p>Loading profile...</p>;
   }
 
+  // Render the user's profile information
   return (
     <div className="profile-info-container">
       <div className="profile-info-label">Profile Information:</div>

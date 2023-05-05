@@ -6,9 +6,11 @@ import Recommendations from './Recommendations';
 import './style/App.css';
 import axios from "axios";
 
+// Main App component
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
+  // Handles the login process
   const handleLogin = async () => {
     console.log('handleLogin called');
     localStorage.setItem('loginClicked', 'true');
@@ -21,6 +23,7 @@ function App() {
     }
   };
 
+  // Refreshes the access token
   const refreshAccessToken = () => {
     const storedRefreshToken = localStorage.getItem('spotify_refresh_token');
     if (storedRefreshToken) {
@@ -36,6 +39,7 @@ function App() {
     }
   };
 
+  // Handles initial login check and token refresh
   useEffect(() => {
     (async () => {
       const url = window.location.href;
@@ -50,13 +54,13 @@ function App() {
         localStorage.setItem('spotify_refresh_token', refreshToken);
         localStorage.setItem('spotify_token_expire_time', expiresIn);
         setIsLoggedIn(accessToken);
-      } else if (!isLoggedIn) { // add a condition to check if isLoggedIn is already set
+      } else if (!isLoggedIn) {
         refreshAccessToken();
       }
     })();
-  }, [isLoggedIn]); // add isLoggedIn to the dependency array
-  
+  }, [isLoggedIn]);
 
+  // Handles the logout process
   const handleLogout = () => {
     localStorage.removeItem('spotify_access_token');
     localStorage.removeItem('spotify_refresh_token');
