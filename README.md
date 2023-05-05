@@ -2,7 +2,10 @@
 ## See API prototype: ON BRANCH PROTOTYPE
 
 ## Project Description:  
-Spotify playlist generator based on current location and weather that generates 10 songs for your weather mood.
+Spotify Playlist Generator is a project aimed at giving the users a Spotify playlist including ten recommended songs based on location and weather. It allows users to sign in through their Spotify account to access all paid features from the app. Users can search for specific city they are interested in or the city they currently live in to get the live weather, temperature, longitude and latitude updates. Spotify Playlist Generator will provide users 10 recommended songs available on Spotify that suits the weather condition. The goal for this project is to make it easier for people to gather songs that fit their mood with the current weather. By doing so, the project aims to increase users’ music experience.
+
+This web app gets the recommended songs for users is by filtering both the weather and the temperature. The filtering system of Spotify Playlist Generator matches different weather with specific music genres. For example, rainy days are considered as moody, sleepy, and introspecting. In that case, the system considers any sort of Jazz goes great with a rainy day. To further separate different songs with each other, Spotify Playlist Generator's recommendation system reads the temperature which are passed as parameters to Spotify API to select the matching acoustics.
+
 ## Table of contents
 
 - [Installation](#installation-npm-and-firebase)
@@ -65,5 +68,12 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Built with:  
-React frontend, Firebase Backend. 
+React frontend, Express backend, Firebase.
 
+## Snapshots:
+(Missing)
+
+## About us:
+This project is created by Team 9 in Lab B2 of CS411 at Boston University. Team members includes: [Elaine](https://github.com/elaineleiyoung), [Jackson](https://github.com/Swaggermuffin64), and [Jianing](https://github.com/trudali).
+
+*Note: For some reason, one of our team member Jianing Li contributed with two accounts: trudali and 李嘉宁.
