@@ -8,13 +8,16 @@ This web app gets the recommended songs for users is by filtering both the weath
 
 ## Table of contents
 
+- [Built with](#built-with)
 - [Installation](#installation-npm-and-firebase)
 - [Running the app](#running-the-app)
-- [Built with](#built-with)
 - [Snapshots](#snapshots)
 - [About us](#about-us)
 
 ## Find our project: `cd spotify-playlist-generator`
+
+## Built with:  
+React frontend, Express backend, Firebase.
 
 ## Installation: npm and Firebase 
  
@@ -67,11 +70,10 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-## Built with:  
-React frontend, Express backend, Firebase.
 
 ## Snapshots:
-(Missing)
+<img height="300" src="https://github.com/elaineleiyoung/StakeTheStigma/blob/master/assets/screenshot5.png](https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot1.png"/>
+<img height="300" src="https://github.com/elaineleiyoung/StakeTheStigma/blob/master/assets/screenshot5.png](https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot2.png"/>
 
 ## About us:
 This project is created by Team 9 in Lab B2 of CS411 at Boston University. Team members includes: [Elaine](https://github.com/elaineleiyoung), [Jackson](https://github.com/Swaggermuffin64), and [Jianing](https://github.com/trudali).
