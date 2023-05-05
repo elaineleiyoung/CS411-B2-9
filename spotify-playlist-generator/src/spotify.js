@@ -16,6 +16,7 @@ import {
   query,
 } from 'firebase/firestore';
 
+// Define keys for local storage
 const LOCALSTORAGE_KEYS = {
   accessToken: 'spotify_access_token',
   refreshToken: 'spotify_refresh_token',
@@ -23,9 +24,12 @@ const LOCALSTORAGE_KEYS = {
   timestamp: 'spotify_token_timestamp',
 };
 
+// Reference to the spotifyTokensCollection in Firebase
 const spotifyTokensCollection = collection(firebase, 'spotifyTokensCollection');
 
+// Get the access token from local storage or Firebase
 export const getAccessToken = async () => {
+  // Parse URL query parameters
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const queryParams = {
@@ -35,6 +39,8 @@ export const getAccessToken = async () => {
   };
   const hasError = urlParams.get('error');
   const hasFailure = urlParams.get('failure');
+
+  // If there's a failure, redirect to the homepage
   if (hasFailure) {
     window.location.href = 'http://localhost:3000';
     return null;
@@ -80,6 +86,7 @@ export const getAccessToken = async () => {
   return null;
 };
 
+// Check if the token has expired
 const hasTokenExpired = async () => {
   const tokenData = {
     expireTime: Number(window.localStorage.getItem(LOCALSTORAGE_KEYS.expireTime)),
@@ -94,12 +101,15 @@ const hasTokenExpired = async () => {
   return (millisecondsElapsed / 1000) > Number(tokenData.expireTime);
 };
 
-
+// Refresh the access token
 const refreshToken = async () => {
   try {
+    // Query the firebase collection for the most recent token
     const q = query(collection(firebase, "spotifyTokensCollection"), orderBy("expireTime", "desc"), limit(1));
     const snapshot = await getDocs(q);
     console.log(snapshot)
+    
+    // If no token is found, log out the user
     if (snapshot.empty) {
       console.error('No refresh token available');
       logout();
@@ -113,25 +123,30 @@ const refreshToken = async () => {
     const now = Date.now();
     const threshold = 60 * 1000; // 1 minute
 
+    // If the token is still valid, return without doing anything
     if (tokenData.expireTime - now > threshold) {
       console.log('Token is still valid');
       return;
     }
 
+    // If the refresh token is invalid, log out the user
     if (!refreshTokenValue || refreshTokenValue === 'undefined') {
       console.error('No refresh token available');
       logout();
       return;
     }
 
+    // Make a request to the Spotify API to refresh the token
     const { data } = await axios.get(`http://localhost:9000/spotify/refresh_token?refresh_token=${refreshTokenValue}`);
 
+    // If there's an error with the refreshed token, log out the user
     if (!data.access_token || !data.expires_in) {
       console.error('Error refreshing token');
       logout();
       return;
     }
 
+    // Create a new token data object with the updated values
     const newTokenData = {
       expireTime: now + (data.expires_in * 1000),
       refreshToken: data.refresh_token || refreshTokenValue,
@@ -154,6 +169,8 @@ const refreshToken = async () => {
   }
 };
 
+// refreshUserToken function takes a refreshToken as an argument
+// and returns a new access token by making a request to the Spotify API
 const refreshUserToken = async (refreshToken) => {
   try {
     const response = await axios.get(`http://localhost:9000/spotify/refresh_token?refresh_token=${refreshToken}`);
@@ -169,6 +186,8 @@ const refreshUserToken = async (refreshToken) => {
  * @returns {void}
  */
 
+// logout function clears all localStorage items related to Spotify tokens
+// and navigates the user back to the homepage
 export const logout = async () => {
   try {
     // Remove token from Firebase collection

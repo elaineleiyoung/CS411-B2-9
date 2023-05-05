@@ -5,19 +5,20 @@ import Button from "@mui/material/Button";
 import {firebase} from "./firebase.js";
 import { collection, getDocs } from "firebase/firestore";
 import './style/Recommendations.css'
-// const db = firebase.firestore();
 
+// Recommendations component: main component to handle user input, display weather and music recommendations
 function Recommendations() {
+  // State variables for user input, weather data, Spotify recommendations and access token
   const [location, setLocation] = useState("");
   const [coordinates, setCoordinates] = useState(null);
   const [weather, setWeather] = useState({ temp: null, description: null });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [apiResponse, setApiResponse] = useState("");
   const [genre, setGenre] = useState(null);
   const [tracks, setTracks] = useState(null);
-
   const [accessToken, setAccessToken] = useState("");
+
+  // Fetch access token from Firestore
 
   useEffect(() => {
     const db = collection(firebase, "spotifyTokensCollection");
@@ -35,6 +36,7 @@ function Recommendations() {
     let genre;
     let acousticness;
   
+    // changes genre based on weather description
     switch (description.toLowerCase()) {
       case "clear sky":
         genre = "pop";
@@ -69,6 +71,7 @@ function Recommendations() {
     }
 
 
+    // changes acousticness parameter based on temperature
     if (temp < 10) {
       acousticness = (Math.random() * (1.0 - 0.7) + 0.7).toFixed(2);
     } else if (temp >= 10 && temp <= 25) {
@@ -82,6 +85,7 @@ function Recommendations() {
   };
   
 
+  // callWeatherAPI: fetches weather data for the given location
   const callWeatherAPI = async (location) => {
     const response = await axios.get(
       `http://localhost:9000/weatherAPI?location=${location}`
@@ -90,6 +94,7 @@ function Recommendations() {
     return response.data;
   };
 
+  // callRecommendationsAPI: fetches Spotify recommendations based on the genre, acousticness, and access token
   const callRecommendationsAPI = async (genre, acousticness, accessToken) => {
     console.log(accessToken)
     try {
@@ -113,6 +118,7 @@ function Recommendations() {
   };
   
 
+  // handleSubmit: handles the form submission, fetches weather and Spotify recommendations
   const handleSubmit = async (event) => {
   event.preventDefault();
 
@@ -158,6 +164,8 @@ function Recommendations() {
       setTracks(null);
     }
   };
+
+  // Rendering: displays the form, weather data, and music recommendations
   return (
     <div className="app-container">
       <p className="app-description">Our application takes the current weather of any location searched and uses the temperature to adjust the acousticness and the weather description to adjust the genre of your song recommendations.</p>
