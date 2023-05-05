@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {firebase} from "./firebase.js";
 import { collection, getDocs } from "firebase/firestore";
-import './Recommendations.css'
+import './style/Recommendations.css'
 // const db = firebase.firestore();
 
 function Recommendations() {
@@ -207,11 +207,22 @@ function Recommendations() {
                       style={{ width: "50px", height: "50px" }}
                     />
                     <div className="app-track-details">
-                      <h3 className="app-track-name">{track.name}</h3>
-                      <p className="app-track-artists">
-                        {track.artists.map((artist) => artist.name).join(", ")}
-                      </p>
+                      <div className="app-track-info">
+                        <div>
+                          <h3 className="app-track-name">{track.name}</h3>
+                          <p className="app-track-artists">
+                            {track.artists.map((artist) => artist.name).join(", ")}
+                          </p>
+                        </div>
+                        <div className="app-track-right">
+                          <p className="app-track-album">Album: {track.album.name}</p>
+                          <p className="app-track-release-date">
+                            Release Date: {track.album.release_date}
+                          </p>
+                        </div>
+                      </div>
                     </div>
+
                   </li>
                 ))}
               </ul>

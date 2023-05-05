@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 var express = require("express");
 
 // const cors = require("cors");
@@ -8,8 +8,8 @@ const app = express();
 var router = express.Router();
 // const PORT = process.env.PORT || 9000;
 
-const OPENCAGE_API_KEY = "487387173cf843608a6ede0711de3d9c";
-const OPENWEATHER_API_KEY ="8a3540456c5f2c1d3dfdc434a5c3bc20";
+const OPENCAGE_API_KEY = process.env.OPENCAGE_API_KEY;
+const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 
 // app.use(cors());
 app.use(express.json());

@@ -1,20 +1,15 @@
 require('dotenv').config();
 
-console.log(process.env.CLIENT_ID);
-
 const express = require('express');
 const axios = require('axios');
 const querystring = require('querystring');
-// Import the CORS package
 const cors = require('cors');
 
+// Access the environment variables
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
 
-
-
-// var CLIENT_ID =  process.env.REACT_APP_CLIENT_ID;
-var CLIENT_ID = "e687e857785e45aaa016ecbbb7f49ba0";
-var CLIENT_SECRET = "8c555068a8b84c4ab992ea6cc4e4be55";
-var REDIRECT_URI= "http://localhost:9000/spotify/callback";
 
 const router = express.Router();
 

@@ -1,0 +1,24 @@
+.profile-info-container {
+    border: 1px solid black;
+    padding: 15px;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+  
+  .profile-info-label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .profile-image {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+  }
+  .profile-info-content {
+    display: flex;
+    align-items: center;
+  }
+  

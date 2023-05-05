@@ -3,7 +3,7 @@ import { accessToken, login, logout } from './spotify';
 import Button from '@mui/material/Button';
 import Profile from './Profile.js'
 import Recommendations from './Recommendations';
-import './App.css';
+import './style/App.css';
 import axios from "axios";
 
 function App() {

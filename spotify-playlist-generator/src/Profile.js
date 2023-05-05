@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import './style/Profile.css';
 
 function Profile({ accessToken }) {
   const [profileData, setProfileData] = useState(null);
@@ -27,24 +28,26 @@ function Profile({ accessToken }) {
   }
 
   return (
-    <div>
-    <div style={{ display: "flex", alignItems: "center" }}>
-      {profileData.images && profileData.images.length > 0 && (
-        <img
-          src={profileData.images[0].url}
-          alt={`${profileData.display_name}'s profile`}
-          style={{ borderRadius: "50%", width: "100px", height: "100px", marginRight: "20px" }}
-        />
-      )}
-      <div>
-        <h2>{profileData.display_name}</h2>
-        <p>Email: {profileData.email}</p>
-        <p>Spotify ID: {profileData.id}</p>
-        <p>Followers: {profileData.followers.total}</p>
+    <div className="profile-info-container">
+      <div className="profile-info-label">Profile Information:</div>
+      <div className="profile-info-content">
+        {profileData.images && profileData.images.length > 0 && (
+          <img
+            className="profile-image"
+            src={profileData.images[0].url}
+            alt={`${profileData.display_name}'s profile`}
+          />
+        )}
+        <div>
+          <h2>{profileData.display_name}</h2>
+          <p>Email: {profileData.email}</p>
+          <p>Spotify ID: {profileData.id}</p>
+          <p>Followers: {profileData.followers.total}</p>
+        </div>
       </div>
     </div>
-  </div>
   );
+  
 }
 
 export default Profile;
