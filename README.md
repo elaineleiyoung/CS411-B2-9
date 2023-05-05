@@ -70,12 +70,15 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-
 ## Snapshots:
-<img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot1.png"/>
-<img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot2.png"/>
+
+<p float="left">
+  <img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot1.png" alt="Screenshot 1" border="1" hspace="10">
+  <img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot2.png" alt="Screenshot 2" border="1">
+</p>
 
 ## About us:
+
 This project is created by Team 9 in Lab B2 of CS411 at Boston University. Team members includes: [Elaine](https://github.com/elaineleiyoung), [Jackson](https://github.com/Swaggermuffin64), and [Jianing](https://github.com/trudali).
 
 *Note: For some reason, one of our team member Jianing Li contributed with two accounts: trudali and 李嘉宁.
