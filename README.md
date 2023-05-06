@@ -1,5 +1,8 @@
 # CS411-B2-9
-## See API prototype: ON BRANCH PROTOTYPE
+
+## Final Demo: https://youtu.be/AAKyZYGSMTo
+
+## Note: API Prototype is ON BRANCH PROTOTYPE
 
 ## Project Description:  
 Spotify Playlist Generator is a project aimed at giving the users a Spotify playlist including ten recommended songs based on location and weather. It allows users to sign in through their Spotify account to access all paid features from the app. Users can search for specific city they are interested in or the city they currently live in to get the live weather, temperature, longitude and latitude updates. Spotify Playlist Generator will provide users 10 recommended songs available on Spotify that suits the weather condition. The goal for this project is to make it easier for people to gather songs that fit their mood with the current weather. By doing so, the project aims to increase users’ music experience.
