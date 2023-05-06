@@ -1,5 +1,8 @@
 # CS411-B2-9
-## See API prototype: ON BRANCH PROTOTYPE
+
+## Final Demo: https://youtu.be/AAKyZYGSMTo
+
+## Note: API Prototype is ON BRANCH PROTOTYPE
 
 ## Project Description:  
 Spotify Playlist Generator is a project aimed at giving the users a Spotify playlist including ten recommended songs based on location and weather. It allows users to sign in through their Spotify account to access all paid features from the app. Users can search for specific city they are interested in or the city they currently live in to get the live weather, temperature, longitude and latitude updates. Spotify Playlist Generator will provide users 10 recommended songs available on Spotify that suits the weather condition. The goal for this project is to make it easier for people to gather songs that fit their mood with the current weather. By doing so, the project aims to increase users’ music experience.
@@ -8,13 +11,16 @@ This web app gets the recommended songs for users is by filtering both the weath
 
 ## Table of contents
 
+- [Built with](#built-with)
 - [Installation](#installation-npm-and-firebase)
 - [Running the app](#running-the-app)
-- [Built with](#built-with)
 - [Snapshots](#snapshots)
 - [About us](#about-us)
 
 ## Find our project: `cd spotify-playlist-generator`
+
+## Built with:  
+React frontend, Express backend, Firebase.
 
 ## Installation: npm and Firebase 
  
@@ -67,13 +73,15 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-## Built with:  
-React frontend, Express backend, Firebase.
-
 ## Snapshots:
-(Missing)
+
+<p float="left">
+  <img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot1.png" alt="Screenshot 1" border="1" hspace="10">
+  <img height="300" src="https://github.com/elaineleiyoung/CS411-B2-9/blob/main/spotify-playlist-generator/screenshot2.png" alt="Screenshot 2" border="1">
+</p>
 
 ## About us:
+
 This project is created by Team 9 in Lab B2 of CS411 at Boston University. Team members includes: [Elaine](https://github.com/elaineleiyoung), [Jackson](https://github.com/Swaggermuffin64), and [Jianing](https://github.com/trudali).
 
 *Note: For some reason, one of our team member Jianing Li contributed with two accounts: trudali and 李嘉宁.
